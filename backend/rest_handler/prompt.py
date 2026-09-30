@@ -23,13 +23,29 @@ def generate_input_prompts(lines, step):
 
 # Function to translate prompts
 def translate_prompts(lines):
-    def translate_line(line):
-        res = llm_translate(line)
-        return res
+    import json
+    from backend.util.constant import config_path
+    workers = 1
+    try:
+        if os.path.exists(config_path):
+            with open(config_path, 'r', encoding='utf-8') as file:
+                config = json.load(file)
+                workers = int(config.get('translate_workers', 1))
+    except Exception:
+        workers = 1
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        translated_lines = list(executor.map(translate_line, lines))
-    return translated_lines
+    if workers <= 1:
+        translated_lines = []
+        for line in lines:
+            translated_lines.append(llm_translate(line))
+        return translated_lines
+    else:
+        def translate_line(line):
+            return llm_translate(line)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+            translated_lines = list(executor.map(translate_line, lines))
+        return translated_lines
 
 def extract_scene_from_texts():
     try:

@@ -141,4 +141,5 @@ def serve_images(filename):
 
 if __name__ == '__main__':
     logging.info(f"Current working directory:{os.getcwd()}")
-    app.run(host='localhost', port=1198)
+    port = int(os.environ.get('FLASK_PORT', 1198))
+    app.run(host='localhost', port=port)

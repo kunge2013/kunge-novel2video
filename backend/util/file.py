@@ -147,7 +147,7 @@ def read_file(path):
 def get_config():
     if not os.path.exists(config_path) or os.path.getsize(config_path) == 0:
         with open(config_path, 'w', encoding='utf-8') as file:
-            json.dump({'address1': '', 'address2': '', 'address3': '', 'address3Type':'', 'comfyuiNodeApi':''}, file)
+            json.dump({'address1': '', 'address2': '', 'address2_url': 'https://api.siliconflow.cn/v1/chat/completions', 'address3': '', 'address3Type':'', 'comfyuiNodeApi':''}, file)
     try:
         with open(config_path, 'r', encoding='utf-8') as file:
             return json.load(file)

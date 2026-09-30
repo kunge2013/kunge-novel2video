@@ -9,6 +9,8 @@ export default function Component() {
   const [apikey, setAddress1] = useState('')
   const [model, setModel] = useState('')
   const [address2, setAddress2] = useState('')
+  const [address2Url, setAddress2Url] = useState('')
+  const [translateWorkers, setTranslateWorkers] = useState('1')
   const [address3, setAddress3] = useState('')
   const [address3Type, setAddress3Type] = useState('stable_diffusion_web_ui')
   const [comfyuiNodeApi, setComfyuiNodeApi] = useState('')
@@ -17,6 +19,8 @@ export default function Component() {
     apikey: false,
     model:false,
     address2: false,
+    address2Url: false,
+    translateWorkers: false,
     address3: false,
     comfyuiNodeApi: false
   })
@@ -35,6 +39,8 @@ export default function Component() {
         setAddress1(data.apikey || '')
         setModel(data.model || '')
         setAddress2(data.address2 || '')
+        setAddress2Url(data.address2_url || 'https://api.siliconflow.cn/v1/chat/completions')
+        setTranslateWorkers(String(data.translate_workers || 1))
         setAddress3(data.address3 || '')
         setAddress3Type(data.address3Type || 'stable_diffusion_web_ui')
         setComfyuiNodeApi(JSON.stringify(data.comfyuiNodeApi) || '')
@@ -48,7 +54,7 @@ export default function Component() {
     }
   }
 
-  const saveAddress = async (key: 'url' | 'apikey' | 'model' | 'address2' | 'address3' | 'comfyuiNodeApi', value: string) => {
+  const saveAddress = async (key: 'url' | 'apikey' | 'model' | 'address2' | 'address2Url' | 'translateWorkers' | 'address3' | 'comfyuiNodeApi', value: string) => {
     setSavingStates(prev => ({ ...prev, [key]: true }))
     try {
       const response = await fetch('http://localhost:1198/api/model/config', {
@@ -191,6 +197,54 @@ export default function Component() {
           </div>
           <p className="text-sm text-gray-600">可以使用默认的key，也可以去这个网站申请你自己的apikey:
             https://cloud.siliconflow.cn/account/ak，可以使用免费的小模型进行翻译 (需要实名认证）</p>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="address2Url" className="block text-sm font-medium text-gray-800">
+            硅基流动 URL
+          </label>
+          <div className="flex space-x-2">
+            <input
+                id="address2Url"
+                type="text"
+                value={address2Url}
+                onChange={(e) => setAddress2Url(e.target.value)}
+                placeholder="https://api.siliconflow.cn/v1/chat/completions"
+                className="flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+            />
+            <button
+                onClick={() => saveAddress('address2Url', address2Url)}
+                disabled={savingStates.address2Url}
+                className="px-4 py-2 bg-black text-white rounded-md shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {savingStates.address2Url ? '保存中...' : '保存'}
+            </button>
+          </div>
+          <p className="text-sm text-gray-600">硅基流动的API地址，默认使用 https://api.siliconflow.cn/v1/chat/completions</p>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="translateWorkers" className="block text-sm font-medium text-gray-800">
+            翻译线程数
+          </label>
+          <div className="flex space-x-2">
+            <input
+                id="translateWorkers"
+                type="number"
+                min="1"
+                max="10"
+                value={translateWorkers}
+                onChange={(e) => setTranslateWorkers(e.target.value)}
+                placeholder="1"
+                className="flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+            />
+            <button
+                onClick={() => saveAddress('translateWorkers', translateWorkers)}
+                disabled={savingStates.translateWorkers}
+                className="px-4 py-2 bg-black text-white rounded-md shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {savingStates.translateWorkers ? '保存中...' : '保存'}
+            </button>
+          </div>
+          <p className="text-sm text-gray-600">翻译时的并发线程数，默认1（单线程），可设置为1-10</p>
         </div>
         <div className="space-y-2">
           <label htmlFor="address3Type" className="block text-sm font-medium text-gray-800">

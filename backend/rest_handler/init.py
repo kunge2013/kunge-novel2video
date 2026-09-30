@@ -150,11 +150,11 @@ def save_prompt():
 def get_model_config():
     if not os.path.exists(config_path) or os.path.getsize(config_path) == 0:
         with open(config_path, 'w', encoding='utf-8') as file:
-            json.dump({'model':'', 'url':'', 'apikey': '', 'address2': '', 'address3': ''}, file)
+            json.dump({'model':'', 'url':'', 'apikey': '', 'address2': '', 'address2_url': 'https://api.siliconflow.cn/v1/chat/completions', 'address3': ''}, file)
     try:
         with open(config_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
-            logging.info(data['url'])
+            logging.info(data.get('url'))
         return jsonify(data)
     except Exception as e:
         logging.error(f'Error reading addresses: {e}')
